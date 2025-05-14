@@ -5,54 +5,62 @@
 #include "shapes.h"
 #include "main.h"
 
+void create_fractal(struct SDL_Components *sdl_components) {
+    float start_x = SCREEN_WIDTH/2;
+    float start_y = SCREEN_HEIGHT/2;
+
+    int branches = 5;
+
+    for (int i=0;i<branches;i++) {
+        create_triangle(sdl_components, start_x, start_y, 50);
+
+    }
+}
+
+float add_rotation(float rotation_value, float coordinate_value) {
+
+}
+
+float add_displacement(float displacement_value, float coordinate_value) {
+
+}
+
 /**
  * Function to create a triangle using lines
  *
- * @param sdl_components
- * @param triangle_size how far the triangle is from the middle of itself
+ * @param sdl_components allow the function to draw the triangle
+ * @param x_middle x midpoint of the triangle
+ * @param y_middle y midpoint of the triangle
+ * @param triangle_size size of each edge
  */
-void createTriangle(struct SDL_Components *sdl_components,float triangle_size) {
-    float x_middle = SCREEN_WIDTH/2;
-    float y_middle = SCREEN_HEIGHT/2;
+void create_triangle(struct SDL_Components *sdl_components,float x_middle, float y_middle, float triangle_size) {
+    float radius = triangle_size / sqrt(3);
 
-    float adjacent_length = triangle_size/2;
-    float opposite_length = adjacent_length * tan(30);
-    float hypotenuse_length = adjacent_length / cos(30);
+    float angle1 = 0;
+    float angle2 = 2.0f * M_PI / 3.0f;
+    float angle3 = 4.0f * M_PI / 3.0f;
 
-    printf("hypotenuse_length: %.2f\nopposite_length: %.2f\nadjacent_length: %.2f\n", hypotenuse_length, opposite_length,adjacent_length);
+    float vertex_1_x = x_middle + radius * cos(angle1);
+    float vertex_1_y = y_middle + radius * sin(angle1);
 
-    float vertex_1_x = x_middle + adjacent_length;
-    float vertex_1_y = y_middle + hypotenuse_length;
+    float vertex_2_x = x_middle + radius * cos(angle2);
+    float vertex_2_y = y_middle + radius * sin(angle2);
 
-    float vertex_2_x = x_middle - adjacent_length;
-    float vertex_2_y = y_middle + hypotenuse_length;
-
-    float vertex_3_x = x_middle;
-    float vertex_3_y = y_middle - hypotenuse_length;
-
-    printf("Vertex 1: %.2f, %.2f\nVertex 2: %.2f, %.2f\nVertex 3: %.2f, %.2f\n",
-           vertex_1_x, vertex_1_y,
-           vertex_2_x, vertex_2_y,
-           vertex_3_x, vertex_3_y);
+    float vertex_3_x = x_middle + radius * cos(angle3);
+    float vertex_3_y = y_middle + radius * sin(angle3);
 
     SDL_SetRenderDrawColor(sdl_components->renderer, 255, 255, 255, 255);
     SDL_RenderDrawLine(sdl_components->renderer, vertex_1_x, vertex_1_y, vertex_2_x, vertex_2_y);
     SDL_RenderDrawLine(sdl_components->renderer, vertex_2_x, vertex_2_y, vertex_3_x, vertex_3_y);
     SDL_RenderDrawLine(sdl_components->renderer, vertex_3_x, vertex_3_y, vertex_1_x, vertex_1_y);
 
-    SDL_SetRenderDrawColor(sdl_components->renderer, 0, 255, 255, 255);
-    SDL_Rect rect1 = { vertex_1_x, vertex_1_y, 2, 2};
-    SDL_RenderDrawRect(sdl_components->renderer, &rect1);
+    SDL_RenderDrawLine(sdl_components->renderer, x_middle, y_middle, vertex_2_x, vertex_2_y);
+    SDL_RenderDrawLine(sdl_components->renderer, x_middle, y_middle, vertex_3_x, vertex_3_y);
+    SDL_RenderDrawLine(sdl_components->renderer, x_middle, y_middle, vertex_1_x, vertex_1_y);
 
-    SDL_SetRenderDrawColor(sdl_components->renderer, 255, 0, 255, 255);
-    SDL_Rect rect2 = { vertex_2_x, vertex_2_y, 2, 2};
-    SDL_RenderDrawRect(sdl_components->renderer, &rect2);
-
-    SDL_SetRenderDrawColor(sdl_components->renderer, 0, 0, 255, 255);
-    SDL_Rect rect3 = { vertex_3_x, vertex_3_y, 2, 2};
-    SDL_RenderDrawRect(sdl_components->renderer, &rect3);
-
-    SDL_SetRenderDrawColor(sdl_components->renderer, 255, 100, 255, 255);
-    SDL_Rect middle = { x_middle, y_middle, 4, 4};
-    SDL_RenderDrawRect(sdl_components->renderer, &middle);
+    //Length of each side for debugging purposes
+//    float len1 = sqrt(((vertex_1_x - vertex_2_x) * (vertex_1_x - vertex_2_x)) + ((vertex_1_y - vertex_2_y) * (vertex_1_y - vertex_2_y)));
+//    float len2 = sqrt(((vertex_3_x - vertex_2_x) * (vertex_3_x - vertex_2_x)) + ((vertex_3_y - vertex_2_y) * (vertex_3_y - vertex_2_y)));
+//    float len3 = sqrt(((vertex_1_x - vertex_3_x) * (vertex_1_x - vertex_3_x)) + ((vertex_1_y - vertex_3_y) * (vertex_1_y - vertex_3_y)));
+//    printf("%.2f, %.2f, %.2f\n", len1, len2, len3);
 }

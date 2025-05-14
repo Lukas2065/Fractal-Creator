@@ -37,7 +37,7 @@ void run_event_loop(struct SDL_Components *sdl_components) {
         SDL_SetRenderDrawColor(sdl_components->renderer, 0,0,0,255);
         SDL_RenderClear(sdl_components->renderer);
 
-        createTriangle(sdl_components, 20);
+        create_fractal(sdl_components);
 
         SDL_RenderPresent(sdl_components->renderer);
     }
