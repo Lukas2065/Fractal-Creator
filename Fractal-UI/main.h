@@ -22,6 +22,7 @@ struct SDL_Components {
 bool initialize_SDL(struct SDL_Components *sdl_components);
 void destroy_SDL(struct SDL_Components *sdl_components);
 void run_event_loop(struct SDL_Components *sdl_components);
+void handle_user_input(SDL_Event *event, int *rotation_angle);
 
 
 

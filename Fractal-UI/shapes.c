@@ -5,24 +5,33 @@
 #include "shapes.h"
 #include "main.h"
 
-void create_fractal(struct SDL_Components *sdl_components) {
+void create_fractal(struct SDL_Components *sdl_components, int rotation_angle) {
     float start_x = SCREEN_WIDTH/2;
     float start_y = SCREEN_HEIGHT/2;
 
-    int branches = 5;
+    create_triangle(sdl_components, start_x, start_y, 50, 3, rotation_angle);
+}
 
-    for (int i=0;i<branches;i++) {
-        create_triangle(sdl_components, start_x, start_y, 50);
-
+void add_rotation_to_triangle(int rotation_value, float **x_vertex_values, float **y_vertex_values, float *origin) {
+    for (int i = 0; i < 3; i++) {
+        calculate_rotation(rotation_value, origin, x_vertex_values[i], y_vertex_values[i]);
     }
 }
 
-float add_rotation(float rotation_value, float coordinate_value) {
+void calculate_rotation(int angle, float *origin, float *x, float *y) {
+    //x' = (x - h)cos(θ) - (y - k)sin(θ) + h
+    //y' = (x - h)sin(θ) + (y - k)cos(θ) + k
+    float h = origin[0];
+    float k = origin[1];
 
-}
+    float x0 = *x;
+    float y0 = *y;
 
-float add_displacement(float displacement_value, float coordinate_value) {
+    float new_x = (x0 - h) * cos(angle) - (y0 - k) * sin(angle) + h;
+    float new_y = (x0 - h) * sin(angle) + (y0 - k) * cos(angle) + k;
 
+    *x = new_x;
+    *y = new_y;
 }
 
 /**
@@ -33,7 +42,8 @@ float add_displacement(float displacement_value, float coordinate_value) {
  * @param y_middle y midpoint of the triangle
  * @param triangle_size size of each edge
  */
-void create_triangle(struct SDL_Components *sdl_components,float x_middle, float y_middle, float triangle_size) {
+void create_triangle(struct SDL_Components *sdl_components,float x_middle, float y_middle, float triangle_size, int branch_number, int rotation_angle) {
+    branch_number--;
     float radius = triangle_size / sqrt(3);
 
     float angle1 = 0;
@@ -49,14 +59,28 @@ void create_triangle(struct SDL_Components *sdl_components,float x_middle, float
     float vertex_3_x = x_middle + radius * cos(angle3);
     float vertex_3_y = y_middle + radius * sin(angle3);
 
+    float *x_vertex_values[3] = {&vertex_1_x, &vertex_2_x, &vertex_3_x};
+    float *y_vertex_values[3] = {&vertex_1_y, &vertex_2_y, &vertex_3_y};
+    float origin[2] = {x_middle, y_middle};
+
+    printf("%i\n", rotation_angle);
+
+    add_rotation_to_triangle(rotation_angle, x_vertex_values, y_vertex_values, origin);
+
     SDL_SetRenderDrawColor(sdl_components->renderer, 255, 255, 255, 255);
     SDL_RenderDrawLine(sdl_components->renderer, vertex_1_x, vertex_1_y, vertex_2_x, vertex_2_y);
     SDL_RenderDrawLine(sdl_components->renderer, vertex_2_x, vertex_2_y, vertex_3_x, vertex_3_y);
     SDL_RenderDrawLine(sdl_components->renderer, vertex_3_x, vertex_3_y, vertex_1_x, vertex_1_y);
 
-    SDL_RenderDrawLine(sdl_components->renderer, x_middle, y_middle, vertex_2_x, vertex_2_y);
-    SDL_RenderDrawLine(sdl_components->renderer, x_middle, y_middle, vertex_3_x, vertex_3_y);
-    SDL_RenderDrawLine(sdl_components->renderer, x_middle, y_middle, vertex_1_x, vertex_1_y);
+//    SDL_RenderDrawLine(sdl_components->renderer, x_middle, y_middle, vertex_2_x, vertex_2_y);
+//    SDL_RenderDrawLine(sdl_components->renderer, x_middle, y_middle, vertex_3_x, vertex_3_y);
+//    SDL_RenderDrawLine(sdl_components->renderer, x_middle, y_middle, vertex_1_x, vertex_1_y);
+
+    if(branch_number > 0) {
+        create_triangle(sdl_components, vertex_1_x, vertex_1_y, 50, branch_number, rotation_angle);
+        create_triangle(sdl_components, vertex_2_x, vertex_2_y, 50, branch_number, rotation_angle);
+        create_triangle(sdl_components, vertex_3_x, vertex_3_y, 50, branch_number, rotation_angle);
+    }
 
     //Length of each side for debugging purposes
 //    float len1 = sqrt(((vertex_1_x - vertex_2_x) * (vertex_1_x - vertex_2_x)) + ((vertex_1_y - vertex_2_y) * (vertex_1_y - vertex_2_y)));

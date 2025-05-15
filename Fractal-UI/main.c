@@ -26,20 +26,42 @@ int main(int argc, char* argv[]) {
 void run_event_loop(struct SDL_Components *sdl_components) {
     // Event loop
     int running = 1;
+
+    int current_rotation = 0;
+    int* current_rotation_pointer = &current_rotation;
+
     SDL_Event event;
     while (running) {
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = 0;
+            switch (event.type) {
+                case SDL_QUIT:
+                    running = 0;
+                    break;
+                case SDL_KEYDOWN:
+                    handle_user_input(&event, current_rotation_pointer);
+                    break;
             }
         }
 
         SDL_SetRenderDrawColor(sdl_components->renderer, 0,0,0,255);
         SDL_RenderClear(sdl_components->renderer);
 
-        create_fractal(sdl_components);
+        create_fractal(sdl_components, current_rotation);
 
         SDL_RenderPresent(sdl_components->renderer);
+    }
+}
+
+void handle_user_input(SDL_Event *event, int *rotation_angle) {
+    switch (event->key.keysym.sym) {
+        case SDLK_w:
+            *rotation_angle = (*rotation_angle + 1 + 360) % 360;
+            break;
+        case SDLK_s:
+            *rotation_angle = (*rotation_angle - 1 + 360) % 360;
+            break;
+        default:
+            break;
     }
 }
 
