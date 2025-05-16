@@ -4,6 +4,7 @@
 
 #include "main.h"
 #include "shapes.h"
+#include "file_reader.h"
 
 int main(int argc, char* argv[]) {
 
@@ -17,7 +18,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    run_event_loop(&sdl_components);
+    read_file();
+    //run_event_loop(&sdl_components);
 
     destroy_SDL(&sdl_components);
     return 0;
@@ -46,7 +48,7 @@ void run_event_loop(struct SDL_Components *sdl_components) {
         SDL_SetRenderDrawColor(sdl_components->renderer, 0,0,0,255);
         SDL_RenderClear(sdl_components->renderer);
 
-        create_fractal(sdl_components, current_rotation);
+        //create_fractal(sdl_components, current_rotation);
 
         SDL_RenderPresent(sdl_components->renderer);
     }
