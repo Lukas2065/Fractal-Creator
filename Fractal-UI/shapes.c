@@ -88,3 +88,32 @@ void create_triangle(struct SDL_Components *sdl_components,float x_middle, float
 //    float len3 = sqrt(((vertex_1_x - vertex_3_x) * (vertex_1_x - vertex_3_x)) + ((vertex_1_y - vertex_3_y) * (vertex_1_y - vertex_3_y)));
 //    printf("%.2f, %.2f, %.2f\n", len1, len2, len3);
 }
+
+void draw_graphic(struct Graphic graphic, struct SDL_Components *sdl_components) {
+    SDL_SetRenderDrawColor(sdl_components->renderer, 255, 255, 255, 255);
+    struct Coordinates coordinate1, coordinate2;
+    for (int i = 0; i < graphic.num_coordinates; i++) {
+        if(i+1 != graphic.num_coordinates) {
+            coordinate1 = graphic.coordinates[i];
+            coordinate2 = graphic.coordinates[i+1];
+            create_points_to_draw(&coordinate1);
+            create_points_to_draw(&coordinate2);
+            SDL_RenderDrawLine(sdl_components->renderer, coordinate1.x, coordinate1.y, coordinate2.x, coordinate2.y);
+        }
+    }
+}
+
+void create_points_to_draw(struct Coordinates *coordinates) {
+    //flip_points(coordinates);
+    centralise_points(coordinates);
+}
+
+void flip_points(struct Coordinates *coordinates) {
+    coordinates->x = coordinates->x * -1;
+    coordinates->y = coordinates->y * -1;
+}
+
+void centralise_points(struct Coordinates *coordinates) {
+    coordinates->x = coordinates->x + SCREEN_WIDTH/2;
+    coordinates->y = coordinates->y + SCREEN_HEIGHT/2;
+}

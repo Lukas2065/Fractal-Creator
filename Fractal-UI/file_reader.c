@@ -4,7 +4,7 @@
 
 #include "file_reader.h"
 
-void read_file() {
+void read_file(struct SDL_Components* sdl_components) {
     FILE *fptr;
 
     // Open a file in read mode
@@ -15,17 +15,21 @@ void read_file() {
 
     char fractal_information[256];
     char *token;
+    int count;
 
     while (fgets(fractal_information, 256, fptr)) {
         char *rest = fractal_information;
         token = strtok_r(fractal_information, " ", &rest);
+        count = 0;
         while (token != NULL) {
-            if(strcmp(token,"TRANSFORM") == 0) {
+            if(strcmp(token,"TRANSFORM") == 0 && count == 0) {
                 store_transform_information(rest);
             }
-            else if(strcmp(token,"GRAPHIC") == 0) {
-                store_transform_information(rest);
+            else if(strcmp(token,"GRAPHIC") == 0 && count == 0) {
+                struct Graphic current_graphic = store_graphic_information(rest);
+                draw_graphic(current_graphic, sdl_components);
             }
+            count++;
             token = strtok_r(NULL, " ", &rest);
         }
     }
@@ -55,5 +59,68 @@ void store_transform_information(char *line) {
 //           current_transform.translation.y, current_transform.scale);
 }
 
+struct Graphic store_graphic_information(char *line) {
+    struct Graphic current_graphic;
+    char name[50];
+
+    int vertex_count;
+    vertex_count = get_num_coordinates(line);
+
+    current_graphic.num_coordinates = vertex_count;
+    current_graphic.coordinates = calloc(current_graphic.num_coordinates, sizeof(struct Coordinates));
+
+
+    struct Coordinates current_vertex;
+
+    printf("Line: %s\n", line);
+    char *token;
+    char *rest = line;
+    token = strtok_r(line, " ", &rest);
+    bool isName = true;
+    int count = 0;
+    while (token != NULL) {
+        if (isName) {
+            strcpy(name, token);
+            isName = false;
+        } else {
+            get_coordinates(token, &current_vertex);
+            printf("Vertex Var: X: %f, Y: %f\n", current_vertex.x, current_vertex.y);
+            current_graphic.coordinates[count].x = current_vertex.x;
+            current_graphic.coordinates[count].y = current_vertex.y;
+            printf("Current_graphic Var: X: %f, Y: %f\n", current_graphic.coordinates[count].x,
+                   current_graphic.coordinates[count].y);
+            count++;
+        }
+        token = strtok_r(NULL, " ", &rest);
+    }
+
+    return current_graphic;
+
+}
+
+int get_num_coordinates(char *line) {
+    char *token;
+    char line_copy[100];
+    strcpy(line_copy, line);
+    char *rest = line_copy;
+
+    token = strtok_r(line_copy, " ", &rest);
+    int vertex_count = 0;
+    bool isName = true;
+    while (token != NULL) {
+        if(isName) {
+            isName = false;
+        } else {
+            vertex_count++;
+        }
+        token = strtok_r(NULL, " ", &rest);
+    }
+
+    return vertex_count;
+}
+
+void get_coordinates(char *string_coordinates, struct Coordinates *coordinates) {
+    sscanf(string_coordinates, "(%f,%f)",&coordinates->x, &coordinates->y);
+}
 
 
