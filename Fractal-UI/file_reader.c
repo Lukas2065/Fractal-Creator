@@ -19,7 +19,7 @@ void read_file(Transform *transforms, Graphic *graphics, Fractal *fractals) {
     int count;
     int transform_count = 0;
     int graphic_count = 0;
-    int fractal_count = 0;
+    int fractal_count = -1;
     int graphic_branch_count = 0;
     int fractal_branch_count = 0;
 
@@ -40,13 +40,16 @@ void read_file(Transform *transforms, Graphic *graphics, Fractal *fractals) {
                 graphic_count++;
             }
             else if(strcmp(token,"FRACTAL") == 0 && count == 0) {
-                fractals[fractal_count] = store_fractal_information(rest);
+                fractal_count++;
+                store_fractal_information(&fractals[fractal_count], rest);
                 graphic_branch_count = 0;
                 fractal_branch_count = 0;
-                fractal_count++;
             }
             else if(strcmp(token,"BRANCH") == 0 && count == 0) {
-                store_branch_information(&fractals[fractal_count-1], transforms, graphics, fractals, transform_count ,graphic_count, fractal_count, &graphic_branch_count, &fractal_branch_count ,rest);
+                store_branch_information(&fractals[fractal_count],
+                                         transforms, graphics, fractals,
+                                         transform_count ,graphic_count, fractal_count,
+                                         &graphic_branch_count, &fractal_branch_count ,rest);
             }
             count++;
             token = strtok_r(NULL, " ", &rest);
@@ -126,12 +129,10 @@ void get_branch_count(int *graphics, int *fractals) {
     fclose(fptr);
 }
 
-Fractal store_fractal_information(char *line) {
-    Fractal current_fractal;
+void store_fractal_information(Fractal *current_fractal, char *line) {
     char name[50];
     sscanf(line, "%s", name);
-    current_fractal.name = strdup(name);
-    return current_fractal;
+    current_fractal->name = strdup(name);
 }
 
 void store_branch_information(Fractal *current_fractal, Transform *transforms, Graphic *graphics, Fractal *fractals, int transform_count, int graphic_count, int fractal_count, int *current_graphic_branch, int *current_fractal_branch, char *line) {
@@ -141,7 +142,6 @@ void store_branch_information(Fractal *current_fractal, Transform *transforms, G
     char type_name[50];
 
     sscanf(line, "%s [%i:%i] %s %s", transform_name, &start_iteration, &end_iteration, type, type_name);
-    printf("Current Fractal: %s\n", current_fractal->name);
 
     if(strcmp(type, "GRAPHIC") == 0) {
         Graphic_branch current_branch;
@@ -159,7 +159,6 @@ void store_branch_information(Fractal *current_fractal, Transform *transforms, G
                 //printf("GRAPHIC: %s, is in FRACTAL: %s\n", graphics[i].name, current_fractal->name);
             }
         }
-        printf("fractal_count: %i, current_graphic_branch: %i\n", fractal_count-1, *current_graphic_branch);
         current_fractal->graphic_branches[*current_graphic_branch] = current_branch;
         (*current_graphic_branch)++;
     }
@@ -179,7 +178,6 @@ void store_branch_information(Fractal *current_fractal, Transform *transforms, G
                 //printf("FRACTAL: %s, is in FRACTAL: %s\n", fractals[i].name, current_fractal->name);
             }
         }
-        printf("fractal_count: %i, current_fractal_branch: %i\n", fractal_count-1, *current_fractal_branch);
         current_fractal->fractal_branches[*current_fractal_branch] = current_branch;
         (*current_fractal_branch)++;
     }

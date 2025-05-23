@@ -13,7 +13,7 @@ int get_num_coordinates(char *line);
 void get_coordinates(char *string_coordinates, struct Coordinates *coordinates);
 Graphic store_graphic_information(char *line);
 Transform store_transform_information(char *line);
-Fractal store_fractal_information(char *line);
+void store_fractal_information(Fractal *current_fractal, char *line);
 void store_branch_information(Fractal *current_fractal, Transform *transforms, Graphic *graphics, Fractal *fractals, int transform_count, int graphic_count, int fractal_count, int *current_graphic_branch, int *current_fractal_branch, char *line);
 void get_num_instructions(int *transform_count, int *graphic_count, int *fractal_count);
 void get_branch_count(int *graphics, int *fractals);
