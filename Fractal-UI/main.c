@@ -9,7 +9,7 @@
 
 int main(int argc, char* argv[]) {
     initialize_svg_file();
-    read_file();
+    get_instructions();
 
     return 0;
 }

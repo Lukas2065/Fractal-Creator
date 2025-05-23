@@ -12,40 +12,46 @@ typedef struct Coordinates {
     float y;
 } Coordinates, Translation;
 
-struct Transform {
+typedef struct Transform {
     char *name;
     float rotation;
     struct Coordinates translation;
     float scale;
-};
+} Transform;
 
-struct Graphic {
+typedef struct Graphic {
     char *name;
     struct Coordinates *coordinates;
     int num_coordinates;
-};
+} Graphic;
 
-struct Graphic_branch {
-    struct Transform *transform;
-    struct Graphic *graphic;
-};
+typedef struct Graphic_branch {
+    Transform *transform;
+    Graphic *graphic;
+    int start_iteration;
+    int end_iteration;
+} Graphic_branch;
 
-struct Fractal_branch {
-    struct Transform *transform;
+typedef struct Fractal_branch {
+    Transform *transform;
     struct Fractal *fractal;
-};
+    int start_iteration;
+    int end_iteration;
+} Fractal_branch;
 
-struct Fractal {
+typedef struct Fractal {
     char *name;
-    struct Graphic_branch *graphic_branches;
+    Graphic_branch *graphic_branches;
     int num_graphic_branches;
 
-    struct Fractal_branch *fractal_branches;
+    Fractal_branch *fractal_branches;
     int num_fractal_branches;
-};
+} Fractal;
 
 
-void draw_graphic(struct Graphic graphic);
+void draw_graphic(Graphic graphic);
+void get_instructions();
+void store_instructions(int transform_count, int graphic_count, int fractal_count, int *graphic_branch_count, int *fractal_branch_count);
 void centralise_points(struct Coordinates *coordinates);
 void create_points_to_draw(struct Coordinates *coordinates);
 void flip_points(struct Coordinates *coordinates);
